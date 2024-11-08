@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "659453565215",
+    "project_id": "checkmate-lntu-ipzm-11",
+    "storage_bucket": "checkmate-lntu-ipzm-11.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:659453565215:android:b875d7366a1af967cb782a",
+        "android_client_info": {
+          "package_name": "com.example.checkmate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "659453565215-a48r628mvhhoep1r5tdom3bkt2brr8v1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.checkmate",
+            "certificate_hash": "3681519830b0d5b324abda554dfb04ca594fd5e2"
+          }
+        },
+        {
+          "client_id": "659453565215-ga1ch5pci98sauusj9bhracqvorsurjt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfTP7nJYPsMXZNQJZTth5xQAgbJ5_ol44"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "659453565215-574an4ds54gejoi2kno7t13g1jlvcp3c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
