@@ -12,6 +12,7 @@ import com.example.checkmate.ui.GoogleSignInScreen
 import com.example.checkmate.ui.TasksListScreen
 import com.example.checkmate.ui.theme.CheckMateTheme
 import com.example.checkmate.viewmodel.GoogleSignInViewModel
+import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
 class MainActivity : ComponentActivity() {
