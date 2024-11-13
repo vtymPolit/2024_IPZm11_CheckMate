@@ -12,6 +12,7 @@ import com.example.checkmate.ui.GoogleSignInScreen
 import com.example.checkmate.ui.TasksListScreen
 import com.example.checkmate.ui.theme.CheckMateTheme
 import com.example.checkmate.viewmodel.GoogleSignInViewModel
+import com.example.checkmate.viewmodel.TasksListScreenViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
@@ -24,6 +25,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val context = LocalContext.current
                 val googleSignInViewModel = GoogleSignInViewModel()
+                val tasksViewModel = TasksListScreenViewModel()
                 val startDestination = if (Firebase.auth.currentUser == null) {
                     "GoogleSignInScreen"
                 } else {
@@ -39,7 +41,7 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         composable("TasksListScreen") {
-                            TasksListScreen()
+                            TasksListScreen(navController, tasksViewModel)
                         }
                     }
                 )
