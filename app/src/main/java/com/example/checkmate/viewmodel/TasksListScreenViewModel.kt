@@ -31,4 +31,8 @@ class TasksListScreenViewModel : ViewModel() {
             documentReference.update("id", documentId)
         }
     }
+
+    fun completedChange(id: String, completed: Boolean) {
+        db.collection(user?.uid.toString()).document(id).update("completed", !completed)
+    }
 }
