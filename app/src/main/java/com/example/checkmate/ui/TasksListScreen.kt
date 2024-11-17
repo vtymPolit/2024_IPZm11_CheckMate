@@ -3,12 +3,14 @@ package com.example.checkmate.ui
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,6 +50,9 @@ fun TasksListScreen(navController: NavController, tasksViewModel: TasksListScree
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            CreateTaskButton(onClick = { navController.navigate("CreateTaskScreen") })
         }
     ) { it ->
         LazyColumn(contentPadding = it) {
@@ -77,5 +82,17 @@ fun TaskItem(
                 )
             )
         }
+    }
+}
+
+@Composable
+fun CreateTaskButton(onClick: () -> Unit) {
+    FloatingActionButton(
+        onClick = onClick,
+        modifier = Modifier
+            .size(86.dp)
+            .padding(16.dp)
+    ) {
+        Text(text = "Add")
     }
 }
