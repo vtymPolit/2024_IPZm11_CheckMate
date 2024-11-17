@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.checkmate.ui.CreateTaskScreen
 import com.example.checkmate.ui.GoogleSignInScreen
 import com.example.checkmate.ui.TasksListScreen
 import com.example.checkmate.ui.theme.CheckMateTheme
@@ -42,6 +43,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("TasksListScreen") {
                             TasksListScreen(navController, tasksViewModel)
+                        }
+                        composable("CreateTaskScreen") {
+                            CreateTaskScreen(navController, tasksViewModel)
                         }
                     }
                 )
