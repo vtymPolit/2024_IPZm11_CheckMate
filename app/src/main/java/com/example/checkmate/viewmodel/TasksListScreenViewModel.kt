@@ -24,4 +24,11 @@ class TasksListScreenViewModel : ViewModel() {
             }
         }
     }
+
+    fun createTask(data: Task) {
+        db.collection(user?.uid.toString()).add(data).addOnSuccessListener { documentReference ->
+            val documentId = documentReference.id
+            documentReference.update("id", documentId)
+        }
+    }
 }
