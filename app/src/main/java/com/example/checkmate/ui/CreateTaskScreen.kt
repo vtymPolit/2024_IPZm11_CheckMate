@@ -68,7 +68,7 @@ fun CreateTaskScreen(navController: NavController, tasksViewModel: TasksListScre
                 }
                 Button(onClick = {
                     if (name.isNotBlank()) {
-                        val newTask = Task(name = name, description = description)
+                        val newTask = Task(name = name, description = description, completed = false)
                         tasksViewModel.createTask(newTask)
                         navController.popBackStack()
                     }
