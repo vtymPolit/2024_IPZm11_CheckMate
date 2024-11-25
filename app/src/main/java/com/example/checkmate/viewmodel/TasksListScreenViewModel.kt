@@ -1,6 +1,7 @@
 package com.example.checkmate.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.example.checkmate.data.AuthRepo
 import com.example.checkmate.data.Task
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -9,15 +10,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class TasksListScreenViewModel : ViewModel() {
+class TasksListScreenViewModel(val authRepo: AuthRepo) : ViewModel() {
     private val _tasksList = MutableStateFlow<List<Task>>(emptyList())
     val tasksList: StateFlow<List<Task>> = _tasksList.asStateFlow()
 
     private val db = Firebase.firestore
-    private val user = Firebase.auth.currentUser
+//    private val user = Firebase.auth.currentUser
 
     fun getTasksListFromFirebase() {
-        db.collection(user?.uid.toString()).get().addOnCompleteListener { task ->
+        db.collection(authRepo.user?.uid.toString()).get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val tasks = task.result.toObjects(Task::class.java)
                 _tasksList.value = tasks

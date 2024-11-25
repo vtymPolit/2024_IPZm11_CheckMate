@@ -11,6 +11,7 @@ import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.checkmate.R
+import com.example.checkmate.data.AuthRepo
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.AuthResult
@@ -24,7 +25,7 @@ import kotlinx.coroutines.tasks.await
 import java.security.MessageDigest
 import java.util.UUID
 
-class GoogleSignInViewModel : ViewModel() {
+class GoogleSignInViewModel(val authRepo: AuthRepo) : ViewModel() {
 
     fun handleGoogleSignIn(context: Context, navController: NavController) {
         viewModelScope.launch {
@@ -45,6 +46,7 @@ class GoogleSignInViewModel : ViewModel() {
                             // Navigate to the home screen
                             navController.navigate("TasksListScreen")
                         }
+                        authRepo.updateUser()
                     },
                     onFailure = { e ->
                         // Handle sign-in error
