@@ -8,14 +8,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.checkmate.data.AuthRepo
 import com.example.checkmate.ui.CreateTaskScreen
 import com.example.checkmate.ui.GoogleSignInScreen
 import com.example.checkmate.ui.TasksListScreen
 import com.example.checkmate.ui.theme.CheckMateTheme
 import com.example.checkmate.viewmodel.GoogleSignInViewModel
 import com.example.checkmate.viewmodel.TasksListScreenViewModel
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,9 +24,10 @@ class MainActivity : ComponentActivity() {
             CheckMateTheme {
                 val navController = rememberNavController()
                 val context = LocalContext.current
-                val googleSignInViewModel = GoogleSignInViewModel()
-                val tasksViewModel = TasksListScreenViewModel()
-                val startDestination = if (Firebase.auth.currentUser == null) {
+                val authRepo = AuthRepo()
+                val googleSignInViewModel = GoogleSignInViewModel(authRepo)
+                val tasksViewModel = TasksListScreenViewModel(authRepo)
+                val startDestination = if (authRepo.user == null) {
                     "GoogleSignInScreen"
                 } else {
                     "TasksListScreen"
