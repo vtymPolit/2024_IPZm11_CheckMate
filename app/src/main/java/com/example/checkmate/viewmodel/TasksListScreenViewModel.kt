@@ -34,4 +34,9 @@ class TasksListScreenViewModel(private val authRepo: AuthRepo) : ViewModel() {
     fun completedChange(id: String, completed: Boolean) {
         db.collection(authRepo.user?.uid.toString()).document(id).update("completed", !completed)
     }
+
+    fun destroyTask(id: String) {
+        db.collection(authRepo.user?.uid.toString()).document(id).delete()
+        getTasksListFromFirebase()
+    }
 }
