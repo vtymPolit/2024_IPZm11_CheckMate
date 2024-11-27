@@ -64,5 +64,6 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation("androidx.credentials:credentials:<latest version>")
     implementation("androidx.credentials:credentials-play-services-auth:<latest version>")
-    implementation("com.google.android.libraries.identity.googleid:googleid:<latest version>")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.0.1")
+    implementation("androidx.compose.material:material-icons-extended:1.5.4")
 }

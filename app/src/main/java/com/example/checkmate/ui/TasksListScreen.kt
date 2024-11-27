@@ -1,17 +1,25 @@
 package com.example.checkmate.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -81,6 +89,7 @@ fun TaskItem(
     tasksViewModel: TasksListScreenViewModel
 ) {
     var completed by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
     completed = task.completed
     Card(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -97,6 +106,53 @@ fun TaskItem(
                     textDecoration = completedStyle
                 )
             )
+            Spacer(modifier = Modifier.weight(1f))
+            TaskItemButton(
+                expanded = expanded,
+                onClick = { expanded = !expanded }
+            )
+        }
+        if (expanded) {
+            TaskItemExpanded(task.description)
+        }
+    }
+}
+
+@Composable
+fun TaskItemButton(
+    expanded: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+            contentDescription = "more info"
+        )
+    }
+}
+
+@Composable
+fun TaskItemExpanded(
+    taskDescription: String,
+    modifier: Modifier = Modifier
+) {
+    Row(modifier.padding(16.dp)) {
+        Text(text = taskDescription)
+    }
+    Row(
+        modifier
+            .fillMaxWidth()
+            .padding(8.dp), horizontalArrangement = Arrangement.Center) {
+        Button(onClick = {}) {
+            Text("update")
+        }
+        Spacer(modifier.width(16.dp))
+        Button(onClick = {}) {
+            Text("delete")
         }
     }
 }
