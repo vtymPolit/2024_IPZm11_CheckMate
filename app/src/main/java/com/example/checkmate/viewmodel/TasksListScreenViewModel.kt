@@ -16,6 +16,7 @@ class TasksListScreenViewModel(private val authRepo: AuthRepo) : ViewModel() {
     private val db = Firebase.firestore
 
     fun getTasksListFromFirebase() {
+        authRepo.updateUser()
         db.collection(authRepo.user?.uid.toString()).get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val tasks = task.result.toObjects(Task::class.java)

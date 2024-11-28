@@ -25,6 +25,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val context = LocalContext.current
                 val authRepo = AuthRepo()
+                authRepo.updateUser()
                 val googleSignInViewModel = GoogleSignInViewModel(authRepo)
                 val tasksViewModel = TasksListScreenViewModel(authRepo)
                 val startDestination = if (authRepo.user == null) {
