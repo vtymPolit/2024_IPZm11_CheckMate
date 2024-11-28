@@ -113,7 +113,7 @@ fun TaskItem(
             )
         }
         if (expanded) {
-            TaskItemExpanded(task.description)
+            TaskItemExpanded(task.description,tasksViewModel, task)
         }
     }
 }
@@ -138,20 +138,22 @@ fun TaskItemButton(
 @Composable
 fun TaskItemExpanded(
     taskDescription: String,
-    modifier: Modifier = Modifier
+    tasksViewModel: TasksListScreenViewModel,
+    task: Task
 ) {
-    Row(modifier.padding(16.dp)) {
+    Row(Modifier.padding(16.dp)) {
         Text(text = taskDescription)
     }
     Row(
-        modifier
+        Modifier
             .fillMaxWidth()
-            .padding(8.dp), horizontalArrangement = Arrangement.Center) {
+            .padding(8.dp), horizontalArrangement = Arrangement.Center
+    ) {
         Button(onClick = {}) {
             Text("update")
         }
-        Spacer(modifier.width(16.dp))
-        Button(onClick = {}) {
+        Spacer(Modifier.width(16.dp))
+        Button(onClick = {tasksViewModel.destroyTask(task.id)}) {
             Text("delete")
         }
     }
