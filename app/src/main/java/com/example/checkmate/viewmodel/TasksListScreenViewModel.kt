@@ -13,6 +13,9 @@ class TasksListScreenViewModel(private val authRepo: AuthRepo) : ViewModel() {
     private val _tasksList = MutableStateFlow<List<Task>>(emptyList())
     val tasksList: StateFlow<List<Task>> = _tasksList.asStateFlow()
 
+    private val _selectedTask = MutableStateFlow<Task?>(null)
+    val selectedTask: StateFlow<Task?> get() = _selectedTask.asStateFlow()
+
     private val db = Firebase.firestore
 
     fun getTasksListFromFirebase() {
@@ -39,5 +42,13 @@ class TasksListScreenViewModel(private val authRepo: AuthRepo) : ViewModel() {
     fun destroyTask(id: String) {
         db.collection(authRepo.user?.uid.toString()).document(id).delete()
         getTasksListFromFirebase()
+    }
+
+    fun setSelectedTask(task: Task) {
+        _selectedTask.value = task
+    }
+
+    fun updateTask(task: Task) {
+        db.collection(authRepo.user?.uid.toString()).document(task.id).set(task)
     }
 }
