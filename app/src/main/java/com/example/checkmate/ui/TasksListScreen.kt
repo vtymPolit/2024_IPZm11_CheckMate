@@ -75,7 +75,8 @@ fun TasksListScreen(navController: NavController, tasksViewModel: TasksListScree
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp),
-                    tasksViewModel = tasksViewModel
+                    tasksViewModel = tasksViewModel,
+                    navController = navController
                 )
             }
         }
@@ -86,7 +87,8 @@ fun TasksListScreen(navController: NavController, tasksViewModel: TasksListScree
 fun TaskItem(
     task: Task,
     modifier: Modifier = Modifier,
-    tasksViewModel: TasksListScreenViewModel
+    tasksViewModel: TasksListScreenViewModel,
+    navController: NavController
 ) {
     var completed by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
@@ -113,7 +115,7 @@ fun TaskItem(
             )
         }
         if (expanded) {
-            TaskItemExpanded(task.description,tasksViewModel, task)
+            TaskItemExpanded(task.description,tasksViewModel, task, navController)
         }
     }
 }
@@ -139,7 +141,8 @@ fun TaskItemButton(
 fun TaskItemExpanded(
     taskDescription: String,
     tasksViewModel: TasksListScreenViewModel,
-    task: Task
+    task: Task,
+    navController: NavController
 ) {
     Row(Modifier.padding(16.dp)) {
         Text(text = taskDescription)
@@ -149,7 +152,8 @@ fun TaskItemExpanded(
             .fillMaxWidth()
             .padding(8.dp), horizontalArrangement = Arrangement.Center
     ) {
-        Button(onClick = {}) {
+        Button(onClick = {tasksViewModel.setSelectedTask(task)
+            navController.navigate("UpdateTaskScreen")}) {
             Text("update")
         }
         Spacer(Modifier.width(16.dp))

@@ -12,6 +12,7 @@ import com.example.checkmate.data.AuthRepo
 import com.example.checkmate.ui.CreateTaskScreen
 import com.example.checkmate.ui.GoogleSignInScreen
 import com.example.checkmate.ui.TasksListScreen
+import com.example.checkmate.ui.UpdateTaskScreen
 import com.example.checkmate.ui.theme.CheckMateTheme
 import com.example.checkmate.viewmodel.GoogleSignInViewModel
 import com.example.checkmate.viewmodel.TasksListScreenViewModel
@@ -47,6 +48,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("CreateTaskScreen") {
                             CreateTaskScreen(navController, tasksViewModel)
+                        }
+                        composable("UpdateTaskScreen") {
+                            UpdateTaskScreen(navController, tasksViewModel)
                         }
                     }
                 )
