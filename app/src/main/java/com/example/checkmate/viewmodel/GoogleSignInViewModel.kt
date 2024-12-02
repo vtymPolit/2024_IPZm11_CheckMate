@@ -14,9 +14,11 @@ import com.example.checkmate.R
 import com.example.checkmate.data.AuthRepo
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -44,6 +46,14 @@ class GoogleSignInViewModel(val authRepo: AuthRepo) : ViewModel() {
                                 Toast.LENGTH_LONG
                             ).show()
                             authRepo.updateUser()
+                            Firebase.firestore.collection("users").document(authRepo.user?.uid.toString())
+                                .collection("tasks").get().addOnSuccessListener {documents ->
+                                    if (documents.isEmpty) {
+                                        Firebase.firestore.collection("users").document(authRepo.user?.uid.toString())
+                                            .collection("tasks").document("placeholder").set(mapOf("init" to true))
+                                        Firebase.firestore.collection("users").document(authRepo.user?.uid.toString())
+                                            .collection("tasks").document("placeholder").delete()
+                                    }}
                             // Navigate to the home screen
                             navController.navigate("TasksListScreen")
                         }

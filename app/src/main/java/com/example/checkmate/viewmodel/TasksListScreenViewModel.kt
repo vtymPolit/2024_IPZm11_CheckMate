@@ -20,7 +20,8 @@ class TasksListScreenViewModel(private val authRepo: AuthRepo) : ViewModel() {
 
     fun getTasksListFromFirebase() {
         authRepo.updateUser()
-        db.collection(authRepo.user?.uid.toString()).get().addOnCompleteListener { task ->
+        db.collection("users").document(authRepo.user?.uid.toString())
+            .collection("tasks").get().addOnCompleteListener {task ->
             if (task.isSuccessful) {
                 val tasks = task.result.toObjects(Task::class.java)
                 _tasksList.value = tasks
@@ -29,18 +30,21 @@ class TasksListScreenViewModel(private val authRepo: AuthRepo) : ViewModel() {
     }
 
     fun createTask(data: Task) {
-        db.collection(authRepo.user?.uid.toString()).add(data).addOnSuccessListener { documentReference ->
+        db.collection("users").document(authRepo.user?.uid.toString())
+            .collection("tasks").add(data).addOnSuccessListener { documentReference ->
             val documentId = documentReference.id
             documentReference.update("id", documentId)
         }
     }
 
     fun completedChange(id: String, completed: Boolean) {
-        db.collection(authRepo.user?.uid.toString()).document(id).update("completed", !completed)
+        db.collection("users").document(authRepo.user?.uid.toString())
+            .collection("tasks").document(id).update("completed", !completed)
     }
 
     fun destroyTask(id: String) {
-        db.collection(authRepo.user?.uid.toString()).document(id).delete()
+        db.collection("users").document(authRepo.user?.uid.toString())
+            .collection("tasks").document(id).delete()
         getTasksListFromFirebase()
     }
 
@@ -49,6 +53,7 @@ class TasksListScreenViewModel(private val authRepo: AuthRepo) : ViewModel() {
     }
 
     fun updateTask(task: Task) {
-        db.collection(authRepo.user?.uid.toString()).document(task.id).set(task)
+        db.collection("users").document(authRepo.user?.uid.toString())
+            .collection("tasks").document(task.id).set(task)
     }
 }
