@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "659453565215-a48r628mvhhoep1r5tdom3bkt2brr8v1.apps.googleusercontent.com",
+          "client_id": "659453565215-869lvh0cgdreafnd9kr9sghmu5et1bqg.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.checkmate",
-            "certificate_hash": "3681519830b0d5b324abda554dfb04ca594fd5e2"
+            "certificate_hash": "c9b395af670fd4f5e4c5cecad9a4437e90b6d4e3"
           }
         },
         {
