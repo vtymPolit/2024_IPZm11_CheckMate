@@ -38,7 +38,7 @@ fun CreateTaskScreen(navController: NavController, tasksViewModel: TasksListScre
                     Text(text = "Create Task")
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { navController.navigate("TasksListScreen") }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -69,8 +69,9 @@ fun CreateTaskScreen(navController: NavController, tasksViewModel: TasksListScre
                 Button(onClick = {
                     if (name.isNotBlank()) {
                         val newTask = Task(name = name, description = description, completed = false)
-                        tasksViewModel.createTask(newTask)
-                        navController.popBackStack()
+                        tasksViewModel.createTask(newTask) {
+                            navController.navigate("TasksListScreen")
+                        }
                     }
                 }) {
                     Text(text = "Create")

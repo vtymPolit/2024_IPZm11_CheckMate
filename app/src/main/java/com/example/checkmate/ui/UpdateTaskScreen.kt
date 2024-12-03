@@ -45,7 +45,7 @@ fun UpdateTaskScreen(navController: NavController, tasksViewModel: TasksListScre
                     Text(text = "Update Task")
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { navController.navigate("TasksListScreen") }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -78,8 +78,9 @@ fun UpdateTaskScreen(navController: NavController, tasksViewModel: TasksListScre
                 Button(onClick = {
                     task?.let {
                         val updatedTask = Task(name = name, description = description, completed = it.completed, id = it.id)
-                        tasksViewModel.updateTask(updatedTask)
-                        navController.popBackStack()
+                        tasksViewModel.updateTask(updatedTask) {
+                            navController.navigate("TasksListScreen")
+                        }
                     }
                 }) {
                     Text(text = "Update")

@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.checkmate.data.AuthRepo
+import com.example.checkmate.data.FirebaseFirestoreRepo
 import com.example.checkmate.ui.CreateTaskScreen
 import com.example.checkmate.ui.GoogleSignInScreen
 import com.example.checkmate.ui.TasksListScreen
@@ -26,9 +27,10 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val context = LocalContext.current
                 val authRepo = AuthRepo()
+                val firestoreRepo = FirebaseFirestoreRepo(authRepo)
                 authRepo.updateUser()
                 val googleSignInViewModel = GoogleSignInViewModel(authRepo)
-                val tasksViewModel = TasksListScreenViewModel(authRepo)
+                val tasksViewModel = TasksListScreenViewModel(firestoreRepo)
                 val startDestination = if (authRepo.user == null) {
                     "GoogleSignInScreen"
                 } else {
