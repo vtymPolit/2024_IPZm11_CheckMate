@@ -154,11 +154,11 @@ fun TaskItemExpanded(
     ) {
         Button(onClick = {tasksViewModel.setSelectedTask(task)
             navController.navigate("UpdateTaskScreen")}) {
-            Text("update")
+            Text("Update")
         }
         Spacer(Modifier.width(16.dp))
         Button(onClick = {tasksViewModel.destroyTask(task.id)}) {
-            Text("delete")
+            Text("Delete")
         }
     }
 }
