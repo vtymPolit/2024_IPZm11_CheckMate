@@ -19,7 +19,7 @@ class FirebaseFirestoreRepo(private val authRepo: AuthRepo) {
             }
     }
 
-    fun createTask(data: Task ,onComplete: () -> Unit) {
+    fun createTask(data: Task, onComplete: () -> Unit) {
         db.collection("users").document(authRepo.user?.uid.toString())
             .collection("tasks").add(data).addOnSuccessListener { documentReference ->
                 val documentId = documentReference.id
@@ -43,6 +43,22 @@ class FirebaseFirestoreRepo(private val authRepo: AuthRepo) {
         db.collection("users").document(authRepo.user?.uid.toString())
             .collection("tasks").document(task.id).set(task).addOnCompleteListener {
                 onComplete()
+            }
+    }
+
+    fun searchTasks(query: String, onSuccess: (List<Task>) -> Unit, onFailure: (Exception) -> Unit) {
+        db.collection("users")
+            .document(authRepo.user?.uid.toString())
+            .collection("tasks")
+            .whereGreaterThanOrEqualTo("name", query)
+            .whereLessThan("name", query + "\uf8ff")
+            .get().addOnCompleteListener {task ->
+                if (task.isSuccessful) {
+                    val tasks = task.result.toObjects(Task::class.java)
+                    onSuccess(tasks)
+                } else {
+                    task.exception?.let {onFailure(it)}
+                }
             }
     }
 }
