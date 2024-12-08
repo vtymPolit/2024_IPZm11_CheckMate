@@ -1,5 +1,6 @@
 package com.example.checkmate.data
 
+import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 
@@ -9,7 +10,7 @@ class FirebaseFirestoreRepo(private val authRepo: AuthRepo) {
     fun getTasks(onSuccess: (List<Task>) -> Unit, onFailure: (Exception) -> Unit) {
         authRepo.updateUser()
         db.collection("users").document(authRepo.user?.uid.toString())
-            .collection("tasks").get().addOnCompleteListener {task ->
+            .collection("tasks").orderBy("index").get().addOnCompleteListener {task ->
                 if (task.isSuccessful) {
                     val tasks = task.result.toObjects(Task::class.java)
                     onSuccess(tasks)
@@ -19,7 +20,8 @@ class FirebaseFirestoreRepo(private val authRepo: AuthRepo) {
             }
     }
 
-    fun createTask(data: Task, onComplete: () -> Unit) {
+    fun createTask(data: Task, onComplete: () -> Unit, size: Int) {
+        data.index = size
         db.collection("users").document(authRepo.user?.uid.toString())
             .collection("tasks").add(data).addOnSuccessListener { documentReference ->
                 val documentId = documentReference.id
@@ -59,6 +61,23 @@ class FirebaseFirestoreRepo(private val authRepo: AuthRepo) {
                 } else {
                     task.exception?.let {onFailure(it)}
                 }
+            }
+    }
+
+    fun updateTasksIndexInFirestore(tasks: List<Task>) {
+        val batch = Firebase.firestore.batch()
+        tasks.forEach { task ->
+            val taskRef = db.collection("users")
+                .document(authRepo.user?.uid.toString())
+                .collection("tasks").document(task.id)
+            batch.update(taskRef, "index", task.index)
+        }
+        batch.commit()
+            .addOnSuccessListener {
+                Log.d("Firestore", "Index updated successfully")
+            }
+            .addOnFailureListener { exception ->
+                Log.e("Firestore", "Index to update order: ${exception.message}")
             }
     }
 }

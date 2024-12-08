@@ -50,7 +50,7 @@ class TasksListScreenViewModel(private val firestoreRepo: FirebaseFirestoreRepo)
     }
 
     fun createTask(data: Task, onComplete: () -> Unit) {
-        firestoreRepo.createTask(data, onComplete)
+        firestoreRepo.createTask(data, onComplete, tasksList.value.size)
     }
 
     fun completedChange(id: String, completed: Boolean) {
@@ -78,5 +78,20 @@ class TasksListScreenViewModel(private val firestoreRepo: FirebaseFirestoreRepo)
             },
             onFailure = { exception -> Log.e("TasksViewModel", "Error searching tasks", exception) }
         )
+    }
+
+    fun swapTasks(fromIndex: Int, toIndex: Int) {
+        val mutableTasks = tasksList.value.toMutableList()
+        val movedTask = mutableTasks.removeAt(fromIndex)
+        mutableTasks.add(toIndex, movedTask)
+        mutableTasks.forEachIndexed { index, task ->
+            task.index = index
+        }
+        updateTasksIndexInFirestore(mutableTasks)
+        _tasksList.value = mutableTasks
+    }
+
+    private fun updateTasksIndexInFirestore(tasks: List<Task>) {
+        firestoreRepo.updateTasksIndexInFirestore(tasks)
     }
 }

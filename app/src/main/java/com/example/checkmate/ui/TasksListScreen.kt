@@ -1,5 +1,7 @@
 package com.example.checkmate.ui
 
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
@@ -33,9 +35,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -43,9 +48,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.example.checkmate.data.Task
+import com.example.checkmate.rememberTasksListState
 import com.example.checkmate.viewmodel.TasksListScreenViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,13 +104,45 @@ fun TasksListScreen(navController: NavController, tasksViewModel: TasksListScree
                     singleLine = true,
                 )
             }
-            LazyColumn {
-                items(tasks) {
+            val scope = rememberCoroutineScope()
+            var overscrollJob by remember { mutableStateOf<Job?>(null) }
+            val tasksListState = rememberTasksListState { fromIndex, toIndex ->
+                tasksViewModel.swapTasks(fromIndex, toIndex)
+            }
+            LazyColumn(
+                modifier = Modifier
+                    .pointerInput(Unit){
+                        detectDragGesturesAfterLongPress(
+                            onDrag = {change, offset ->
+                                change.consume()
+                                tasksListState.onDrag(offset)
+
+                                if (overscrollJob?.isActive == true)
+                                    return@detectDragGesturesAfterLongPress
+                                tasksListState.checkForOverScroll()
+                                    .takeIf { it != 0f }
+                                    ?.let { overscrollJob = scope.launch { tasksListState.lazyListState.scrollBy(it) } }
+                                    ?: run { overscrollJob?.cancel() }
+                            },
+                            onDragStart = { offset -> tasksListState.onDragStart(offset) },
+                            onDragEnd = { tasksListState.onDragInterrupted() },
+                            onDragCancel = { tasksListState.onDragInterrupted() }
+                        )
+                    },
+                state = tasksListState.lazyListState,
+            ) {
+                itemsIndexed(tasks) { index, task ->
                     TaskItem(
-                        task = it,
+                        task = task,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
+                            .padding(8.dp)
+                            .graphicsLayer {
+                                val offsetOrNull = tasksListState.elementDisplacement.takeIf {
+                                    index == tasksListState.currentIndexOfDraggedItem
+                                }
+                                translationY = offsetOrNull ?: 0f
+                            },
                         tasksViewModel = tasksViewModel,
                         navController = navController
                     )
@@ -122,7 +162,8 @@ fun TaskItem(
     var completed by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
     completed = task.completed
-    Card(modifier = modifier) {
+    Card(
+        modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(checked = completed,
                 onCheckedChange = {

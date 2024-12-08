@@ -5,4 +5,5 @@ class Task(
     val name: String = "",
     val description : String = "",
     val completed: Boolean = false,
+    var index: Int = 0,
 )
