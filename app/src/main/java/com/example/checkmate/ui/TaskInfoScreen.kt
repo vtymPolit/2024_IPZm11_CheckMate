@@ -107,6 +107,7 @@ fun TaskInfoScreen(
                             onConfirmation = {
                                 tasksListViewModel.destroyTask(selectedTask?.id.toString())
                                 openDialogDestroyConfirm = !openDialogDestroyConfirm
+                                navController.navigate("TasksListScreen")
                             },
                             dialogTitle = "Delete task?"
                         )
