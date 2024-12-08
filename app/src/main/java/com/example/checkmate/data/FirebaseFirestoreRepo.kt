@@ -15,7 +15,7 @@ class FirebaseFirestoreRepo(private val authRepo: AuthRepo) {
                     val tasks = task.result.toObjects(Task::class.java)
                     onSuccess(tasks)
                 } else {
-                    task.exception?.let {onFailure(it)}
+                    task.exception?.let { onFailure(it) }
                 }
             }
     }
@@ -26,7 +26,7 @@ class FirebaseFirestoreRepo(private val authRepo: AuthRepo) {
             .collection("tasks").add(data).addOnSuccessListener { documentReference ->
                 val documentId = documentReference.id
                 documentReference.update("id", documentId)
-            }.addOnCompleteListener{
+            }.addOnCompleteListener {
                 onComplete()
             }
     }
@@ -48,18 +48,22 @@ class FirebaseFirestoreRepo(private val authRepo: AuthRepo) {
             }
     }
 
-    fun searchTasks(query: String, onSuccess: (List<Task>) -> Unit, onFailure: (Exception) -> Unit) {
+    fun searchTasks(
+        query: String,
+        onSuccess: (List<Task>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
         db.collection("users")
             .document(authRepo.user?.uid.toString())
             .collection("tasks")
             .whereGreaterThanOrEqualTo("name", query)
             .whereLessThan("name", query + "\uf8ff")
-            .get().addOnCompleteListener {task ->
+            .get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val tasks = task.result.toObjects(Task::class.java)
                     onSuccess(tasks)
                 } else {
-                    task.exception?.let {onFailure(it)}
+                    task.exception?.let { onFailure(it) }
                 }
             }
     }
@@ -78,6 +82,77 @@ class FirebaseFirestoreRepo(private val authRepo: AuthRepo) {
             }
             .addOnFailureListener { exception ->
                 Log.e("Firestore", "Index to update order: ${exception.message}")
+            }
+    }
+
+    fun getSubtasks(
+        parentId: String,
+        onSuccess: (List<Task>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        authRepo.updateUser()
+        db.collection("users")
+            .document(authRepo.user?.uid.toString())
+            .collection("tasks")
+            .document(parentId)
+            .collection("subtasks")
+            .get()
+            .addOnCompleteListener { subtask ->
+                if (subtask.isSuccessful) {
+                    val subtasks = subtask.result.toObjects(Task::class.java)
+                    onSuccess(subtasks)
+                } else {
+                    subtask.exception?.let { onFailure(it) }
+                }
+            }
+    }
+
+    fun createSubtask(parentId: String, data: Task, onComplete: () -> Unit) {
+        db.collection("users")
+            .document(authRepo.user?.uid.toString())
+            .collection("tasks")
+            .document(parentId)
+            .collection("subtasks")
+            .add(data)
+            .addOnSuccessListener { documentReference ->
+                val documentId = documentReference.id
+                documentReference.update("id", documentId)
+            }
+            .addOnCompleteListener {
+                onComplete()
+            }
+    }
+
+    fun subtaskCompletedChange(parentId: String, id: String, completed: Boolean) {
+        db.collection("users")
+            .document(authRepo.user?.uid.toString())
+            .collection("tasks")
+            .document(parentId)
+            .collection("subtasks")
+            .document(id)
+            .update("completed", !completed)
+    }
+
+    fun destroySubtask(parentId: String, id: String) {
+        db.collection("users")
+            .document(authRepo.user?.uid.toString())
+            .collection("tasks")
+            .document(parentId)
+            .collection("subtasks")
+            .document(id)
+            .delete()
+    }
+
+    fun updateSubtask(parentId: String, task: Task, onComplete: () -> Unit) {
+        db.collection("users")
+            .document(authRepo.user?.uid.toString())
+            .collection("tasks")
+            .document(parentId)
+            .collection("subtasks")
+            .document(task.id)
+            .set(task)
+            .addOnCompleteListener {
+                onComplete()
             }
     }
 }
