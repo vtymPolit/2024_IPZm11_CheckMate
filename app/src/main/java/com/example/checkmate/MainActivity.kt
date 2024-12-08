@@ -12,10 +12,12 @@ import com.example.checkmate.data.AuthRepo
 import com.example.checkmate.data.FirebaseFirestoreRepo
 import com.example.checkmate.ui.CreateTaskScreen
 import com.example.checkmate.ui.GoogleSignInScreen
+import com.example.checkmate.ui.TaskInfoScreen
 import com.example.checkmate.ui.TasksListScreen
 import com.example.checkmate.ui.UpdateTaskScreen
 import com.example.checkmate.ui.theme.CheckMateTheme
 import com.example.checkmate.viewmodel.GoogleSignInViewModel
+import com.example.checkmate.viewmodel.TaskViewModel
 import com.example.checkmate.viewmodel.TasksListScreenViewModel
 
 class MainActivity : ComponentActivity() {
@@ -30,7 +32,8 @@ class MainActivity : ComponentActivity() {
                 val firestoreRepo = FirebaseFirestoreRepo(authRepo)
                 authRepo.updateUser()
                 val googleSignInViewModel = GoogleSignInViewModel(authRepo)
-                val tasksViewModel = TasksListScreenViewModel(firestoreRepo)
+                val tasksListViewModel = TasksListScreenViewModel(firestoreRepo)
+                val taskViewModel = TaskViewModel(firestoreRepo, tasksListViewModel)
                 val startDestination = if (authRepo.user == null) {
                     "GoogleSignInScreen"
                 } else {
@@ -46,13 +49,16 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         composable("TasksListScreen") {
-                            TasksListScreen(navController, tasksViewModel)
+                            TasksListScreen(navController, tasksListViewModel, taskViewModel)
+                        }
+                        composable("TaskInfoScreen") {
+                            TaskInfoScreen(navController, tasksListViewModel, taskViewModel)
                         }
                         composable("CreateTaskScreen") {
-                            CreateTaskScreen(navController, tasksViewModel)
+                            CreateTaskScreen(navController, tasksListViewModel, taskViewModel)
                         }
                         composable("UpdateTaskScreen") {
-                            UpdateTaskScreen(navController, tasksViewModel)
+                            UpdateTaskScreen(navController, tasksListViewModel, taskViewModel)
                         }
                     }
                 )
