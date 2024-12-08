@@ -26,17 +26,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.checkmate.data.Task
+import com.example.checkmate.viewmodel.TaskViewModel
 import com.example.checkmate.viewmodel.TasksListScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UpdateTaskScreen(navController: NavController, tasksViewModel: TasksListScreenViewModel) {
-    val task by tasksViewModel.selectedTask.collectAsState()
+fun UpdateTaskScreen(
+    navController: NavController,
+    tasksListViewModel: TasksListScreenViewModel,
+    taskViewModel: TaskViewModel
+) {
+    val task by tasksListViewModel.selectedTask.collectAsState()
+    val subtask by taskViewModel.selectedSubtask.collectAsState()
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     LaunchedEffect(task) {
-        name = task?.name ?: ""
-        description = task?.description ?: ""
+        if (subtask == null) {
+            name = task?.name ?: ""
+            description = task?.description ?: ""
+        } else {
+            name = subtask?.name ?: ""
+            description = subtask?.description ?: ""
+        }
     }
     Scaffold(
         topBar = {
@@ -45,7 +56,7 @@ fun UpdateTaskScreen(navController: NavController, tasksViewModel: TasksListScre
                     Text(text = "Update Task")
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate("TasksListScreen") }) {
+                    IconButton(onClick = { navController.navigate("TaskInfoScreen") }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -76,13 +87,35 @@ fun UpdateTaskScreen(navController: NavController, tasksViewModel: TasksListScre
                     )
                 }
                 Button(onClick = {
-                    task?.let {
-                        val updatedTask = Task(name = name, description = description, completed = it.completed, id = it.id)
-                        tasksViewModel.updateTask(updatedTask) {
-                            navController.navigate("TasksListScreen")
+                    if (subtask == null) {
+                        task?.let {
+                            val updatedTask = Task(
+                                name = name,
+                                description = description,
+                                completed = it.completed,
+                                id = it.id
+                            )
+                            tasksListViewModel.updateTask(updatedTask) {
+                                tasksListViewModel.getTasksListFromFirebase()
+                                tasksListViewModel.setSelectedTask(updatedTask)
+                                navController.navigate("TaskInfoScreen")
+                            }
+                        }
+                    } else {
+                        subtask?.let {
+                            val updatedTask = Task(
+                                name = name,
+                                description = description,
+                                completed = it.completed,
+                                id = it.id
+                            )
+                            taskViewModel.updateSubtask(task!!.id, updatedTask) {
+                                navController.navigate("TaskInfoScreen")
+                            }
                         }
                     }
-                }) {
+                }
+                ) {
                     Text(text = "Update")
                 }
             }

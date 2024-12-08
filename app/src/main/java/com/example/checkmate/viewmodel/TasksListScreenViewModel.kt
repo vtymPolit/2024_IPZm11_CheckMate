@@ -5,15 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.checkmate.data.FirebaseFirestoreRepo
 import com.example.checkmate.data.Task
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 
 @OptIn(FlowPreview::class)
@@ -53,7 +50,7 @@ class TasksListScreenViewModel(private val firestoreRepo: FirebaseFirestoreRepo)
         firestoreRepo.createTask(data, onComplete, tasksList.value.size)
     }
 
-    fun completedChange(id: String, completed: Boolean) {
+    fun completedTaskChange(id: String, completed: Boolean) {
         firestoreRepo.completedChange(id, completed)
     }
 
@@ -64,6 +61,10 @@ class TasksListScreenViewModel(private val firestoreRepo: FirebaseFirestoreRepo)
 
     fun setSelectedTask(task: Task) {
         _selectedTask.value = task
+    }
+
+    fun unselectTask() {
+        if (_selectedTask != null) _selectedTask.value = null
     }
 
     fun updateTask(task: Task, onComplete: () -> Unit) {

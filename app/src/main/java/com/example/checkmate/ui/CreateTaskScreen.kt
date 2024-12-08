@@ -16,6 +16,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,11 +25,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.checkmate.data.Task
+import com.example.checkmate.viewmodel.TaskViewModel
 import com.example.checkmate.viewmodel.TasksListScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateTaskScreen(navController: NavController, tasksViewModel: TasksListScreenViewModel) {
+fun CreateTaskScreen(
+    navController: NavController,
+    tasksListViewModel: TasksListScreenViewModel,
+    taskViewModel: TaskViewModel
+) {
+    val parent by tasksListViewModel.selectedTask.collectAsState()
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     Scaffold(
@@ -38,16 +45,24 @@ fun CreateTaskScreen(navController: NavController, tasksViewModel: TasksListScre
                     Text(text = "Create Task")
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate("TasksListScreen") }) {
+                    IconButton(onClick = {
+                        if (parent == null) {
+                            navController.navigate("TasksListScreen")
+                        } else {
+                            navController.navigate("TaskInfoScreen")
+                        }
+                    }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
         }
     ) { innerPadding ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -68,9 +83,16 @@ fun CreateTaskScreen(navController: NavController, tasksViewModel: TasksListScre
                 }
                 Button(onClick = {
                     if (name.isNotBlank()) {
-                        val newTask = Task(name = name, description = description, completed = false)
-                        tasksViewModel.createTask(newTask) {
-                            navController.navigate("TasksListScreen")
+                        val newTask =
+                            Task(name = name, description = description, completed = false)
+                        if (parent == null) {
+                            tasksListViewModel.createTask(newTask) {
+                                navController.navigate("TasksListScreen")
+                            }
+                        } else {
+                            taskViewModel.createSubtask(parent!!.id, newTask) {
+                                navController.navigate("TaskInfoScreen")
+                            }
                         }
                     }
                 }) {
