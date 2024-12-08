@@ -246,47 +246,6 @@ fun TaskItemExpanded(
 }
 
 @Composable
-fun DialogConfirm(
-    onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
-    dialogTitle: String,
-) {
-    Dialog(onDismissRequest = { onDismissRequest() }
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(text = dialogTitle,
-                    modifier = Modifier.padding(16.dp))
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp), horizontalArrangement = Arrangement.Center
-                ) {
-                    Button(onClick = { onConfirmation() }) {
-                        Text("Confirm")
-                    }
-                    Spacer(Modifier.width(16.dp))
-                    Button(onClick = { onDismissRequest() }) {
-                        Text("Cancel")
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
 fun CreateTaskButton(onClick: () -> Unit) {
     FloatingActionButton(
         onClick = onClick,
